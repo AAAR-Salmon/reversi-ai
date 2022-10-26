@@ -1,0 +1,3 @@
+[submodule "reversi-game-py"]
+	path = reversi-game-py
+	url = git@github.com:AAAR-Salmon/reversi-game-py.git
