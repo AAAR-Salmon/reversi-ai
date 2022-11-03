@@ -1,0 +1,29 @@
+[tool.poetry]
+name = "reversi-ai"
+version = "0.1.0"
+description = "Neural-network-based AI of reversi"
+authors = ["AAAR-Salmon <https://github.com/AAAR-Salmon>"]
+license = "Apache-2.0"
+readme = "README.md"
+packages = [{include = "reversi_ai"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = {version = "*", source = "pypi"}
+torch = {version = "*", source = "pytorch_cpu"}
+torchvision = {version = "*", source = "pytorch_cpu"}
+torchaudio = {version = "*", source = "pytorch_cpu"}
+
+
+[[tool.poetry.source]]
+name = "pytorch_cpu"
+url = "https://download.pytorch.org/whl/cpu"
+default = false
+secondary = true
+
+[tool.poetry.dev-dependencies]
+autopep8 = {version = "*", source = "pypi"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
