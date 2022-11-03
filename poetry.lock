@@ -84,6 +84,24 @@ socks = ["PySocks (>=1.5.6,!=1.5.7)"]
 use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
+name = "reversi-game"
+version = "0.1.0"
+description = "Python implementation of scaleable reversi game"
+category = "main"
+optional = false
+python-versions = "^3.10"
+develop = false
+
+[package.dependencies]
+numpy = ">=1.23,<2"
+
+[package.source]
+type = "git"
+url = "https://github.com/AAAR-Salmon/reversi-game-py"
+reference = "HEAD"
+resolved_reference = "79c7c1ba7714106e0a20ce9cf766f7be9e15c7ed"
+
+[[package]]
 name = "tomli"
 version = "2.0.1"
 description = "A lil' TOML parser"
@@ -173,7 +191,7 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "0398546e94955cda1bd700aca0081b481eafeac94bdef6f166854ab02339bb81"
+content-hash = "0703892821dd152b0638cb75fe006956f71e7e93266d6fffb14a5b2a1b5d7912"
 
 [metadata.files]
 autopep8 = [
@@ -291,6 +309,7 @@ requests = [
     {file = "requests-2.28.1-py3-none-any.whl", hash = "sha256:8fefa2a1a1365bf5520aac41836fbee479da67864514bdb821f31ce07ce65349"},
     {file = "requests-2.28.1.tar.gz", hash = "sha256:7c5599b102feddaa661c826c56ab4fee28bfd17f5abca1ebbe3e7f19d7c97983"},
 ]
+reversi-game = []
 tomli = [
     {file = "tomli-2.0.1-py3-none-any.whl", hash = "sha256:939de3e7a6161af0c887ef91b7d41a53e7c5a1ca976325f429cb46ea9bc30ecc"},
     {file = "tomli-2.0.1.tar.gz", hash = "sha256:de526c12914f0c550d15924c62d72abc48d6fe7364aa87328337a31007fe8a4f"},

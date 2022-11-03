@@ -13,6 +13,7 @@ requests = {version = "*", source = "pypi"}
 torch = {version = "*", source = "pytorch_cpu"}
 torchvision = {version = "*", source = "pytorch_cpu"}
 torchaudio = {version = "*", source = "pytorch_cpu"}
+reversi-game = {git = "https://github.com/AAAR-Salmon/reversi-game-py"}
 
 
 [[tool.poetry.source]]
