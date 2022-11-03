@@ -184,7 +184,7 @@ use-chardet-on-py3 = ["chardet (>=3.0.2,<6)"]
 
 [[package]]
 name = "reversi-game"
-version = "0.1.1"
+version = "0.1.2"
 description = "Python implementation of scaleable reversi game"
 category = "main"
 optional = false
@@ -198,7 +198,7 @@ numpy = ">=1.23,<2"
 type = "git"
 url = "https://github.com/AAAR-Salmon/reversi-game-py"
 reference = "HEAD"
-resolved_reference = "726c8849f5d4b7d87fdc78a2d6a656dc3e3073e7"
+resolved_reference = "eb674ee1fe36d63c4eb5e4f9e6e0b9ecaadbaf7f"
 
 [[package]]
 name = "tomli"
