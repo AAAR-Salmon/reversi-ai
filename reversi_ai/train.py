@@ -43,7 +43,7 @@ if __name__ == "__main__":
     flat_coord_to_rc_index = np.mgrid[0:8, 0:8].reshape((2, -1))
 
     for game_i in range(n_games):
-        print(f'game {game_i} / {n_games}', end='\r')
+        print(f"game {game_i} / {n_games}", end="\r")
         reversi = Reversi(8, 8)
         history_i = 0
         history_x = np.empty((n_max_hands, 8 * 8), dtype=np.float32)
