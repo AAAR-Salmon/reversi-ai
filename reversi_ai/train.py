@@ -23,7 +23,7 @@ def train_loop(model, dataloader, loss_fn, optimizer) -> None:
         optimizer.step()
 
 
-if __name__ == "__main__":
+def main():
     ffn = FFN()
 
     # TODO: ======== モデルの読み込み ========
@@ -135,3 +135,7 @@ if __name__ == "__main__":
         ffn.state_dict,
         f"reversi_ffn_model-{datetime.datetime.utcnow().timestamp()}.pickle",
     )
+
+
+if __name__ == "__main__":
+    main()
