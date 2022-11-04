@@ -132,7 +132,7 @@ def main():
 
     # ======== モデルの保存 ========
     torch.save(
-        ffn.state_dict,
+        ffn.state_dict(),
         f"reversi_ffn_model-{datetime.datetime.utcnow().timestamp()}.pickle",
     )
 
