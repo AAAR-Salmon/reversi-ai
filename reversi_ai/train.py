@@ -27,7 +27,9 @@ def train_loop(model, dataloader, loss_fn, optimizer) -> None:
 def main(state_dict_path: str = None):
     ffn = FFN()
 
-    # TODO: ======== モデルの読み込み ========
+    # ======== モデルの読み込み ========
+    ffn.load_state_dict(torch.load(state_dict_path))
+    ffn.train()
 
     # ======== データセットの生成 ========
     n_games = 100
