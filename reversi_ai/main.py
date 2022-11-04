@@ -2,9 +2,17 @@
 
 import argparse
 
+import torch
 
-def main():
-    pass
+from reversi_ai.ffn import FFN
+
+
+def main(model_path: str):
+    ffn = FFN()
+
+    # ======== モデルの読み込み ========
+    ffn.load_state_dict(torch.load(model_path))
+    ffn.eval()
 
 
 if __name__ == "__main__":
@@ -13,4 +21,4 @@ if __name__ == "__main__":
         "model", help="saved model to use (pickle-format, state_dict)"
     )
     args = parser.parse_args()
-    main()
+    main(args.model)
