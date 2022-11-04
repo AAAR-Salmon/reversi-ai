@@ -2,6 +2,7 @@
 import numpy as np
 import scipy.special
 import torch
+import torch.utils.data
 from reversi_game.reversi import Color, Reversi
 from torch import nn
 
@@ -129,7 +130,15 @@ if __name__ == "__main__":
     train_turn.resize((train_i,))
     train_y.resize((train_i, 8 * 8))
 
-    # TODO: ======== DataLoader の設定 ========
+    # ======== DataLoader の設定 ========
+    train_x = torch.tensor(train_x, dtype=torch.float)
+    train_turn = torch.tensor(train_turn, dtype=torch.float)
+    train_y = torch.tensor(train_y, dtype=torch.float)
+
+    dataset = torch.utils.data.TensorDataset(train_x, train_turn, train_y)
+    data_loader = torch.utils.data.DataLoader(
+        dataset, batch_size=100, shuffle=True
+    )
 
     # TODO: ======== 重みの最適化 ========
 
