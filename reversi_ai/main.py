@@ -20,5 +20,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "model", help="saved model to use (pickle-format, state_dict)"
     )
+    parser.add_argument(
+        "server_url", help="server url e.g. http://127.0.0.1:8000"
+    )
     args = parser.parse_args()
     main(args.model)
