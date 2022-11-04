@@ -2,17 +2,30 @@
 
 import argparse
 
+import requests as rq
 import torch
 
 from reversi_ai.ffn import FFN
 
 
-def main(model_path: str):
+def register_user(server_url: str, user_name: str):
+    header = {"Content-Type": "application/json"}
+    res = rq.post(
+        f"{server_url}/users", headers=header, json={"user_name": user_name}
+    )
+    return res.json()
+
+
+def main(model_path: str, server_url: str):
     ffn = FFN()
 
     # ======== モデルの読み込み ========
     ffn.load_state_dict(torch.load(model_path))
     ffn.eval()
+
+    # ======== user（プレイヤー）登録 ========
+    user_name = "FN-36K"
+    user = register_user(server_url, user_name)
 
 
 if __name__ == "__main__":
@@ -24,4 +37,4 @@ if __name__ == "__main__":
         "server_url", help="server url e.g. http://127.0.0.1:8000"
     )
     args = parser.parse_args()
-    main(args.model)
+    main(args.model, args.server_url)
