@@ -29,20 +29,3 @@ class FFN(nn.Module):
         )  # (8, 8, 1) + (1,) -> (65,)
         x = self.fc(x)  # (65,) -> (64,)
         return x
-
-
-def train_loop(model, dataloader, loss_fn, optimizer) -> None:
-    # TODO: 学習用関数の定義
-    size = len(dataloader.dataset)
-    for batch, (x, y) in enumerate(dataloader):
-        pred = model(x)
-        loss = loss_fn(pred, y)
-
-        # Backprop
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-
-        if batch % 100 == 0:
-            loss, current = loss.item(), batch * len(x)
-            print(f"loss: {loss:>7f}  [{current:>5d}/{size:>5d}]")
