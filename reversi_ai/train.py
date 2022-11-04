@@ -1,4 +1,6 @@
 #!/usr/bin/env python
+import datetime
+
 import numpy as np
 import scipy.special
 import torch
@@ -128,4 +130,8 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(ffn.parameters())
     train_loop(ffn, data_loader, loss_fn, optimizer)
 
-    # TODO: ======== モデルの保存 ========
+    # ======== モデルの保存 ========
+    torch.save(
+        ffn.state_dict,
+        f"reversi_ffn_model-{datetime.datetime.utcnow().timestamp()}.pickle",
+    )
