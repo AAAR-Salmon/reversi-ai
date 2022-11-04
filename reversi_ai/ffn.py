@@ -17,15 +17,15 @@ class FFN(nn.Module):
 
     def forward(self, x: torch.Tensor, turn: torch.Tensor) -> torch.Tensor:
         # 入力から出力を計算する
-        x = x.reshape(-1, 8, 8)
-        x = self.conv1(x)  # (8, 8) -> (4, 4, 16)
+        x = x.reshape(-1, 1, 8, 8)
+        x = self.conv1(x)  # (1, 8, 8) -> (16, 4, 4)
         x = self.relu(x)
-        x = self.conv2(x)  # (4, 4, 16) -> (4, 4, 8)
+        x = self.conv2(x)  # (16, 4, 4) -> (8, 4, 4)
         x = self.relu(x)
-        x = self.convt(x)  # (4, 4, 8) -> (8, 8, 1)
+        x = self.convt(x)  # (8, 4, 4) -> (1, 8, 8)
         x = self.relu(x)
         x = torch.cat(
-            (self.flatten(x), turn), dim=1
-        )  # (8, 8, 1) + (1,) -> (65,)
+            (self.flatten(x), turn.reshape(-1, 1)), dim=1
+        )  # (1, 8, 8) + (1,) -> (65,)
         x = self.fc(x)  # (65,) -> (64,)
         return x
