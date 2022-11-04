@@ -23,8 +23,6 @@ def train_loop(model, dataloader, loss_fn, optimizer) -> None:
 
 if __name__ == "__main__":
     ffn = FFN()
-    loss_fn = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(ffn.parameters())
 
     # TODO: ======== モデルの読み込み ========
 
@@ -125,6 +123,9 @@ if __name__ == "__main__":
         dataset, batch_size=100, shuffle=True
     )
 
-    # TODO: ======== 重みの最適化 ========
+    # ======== 重みの最適化 ========
+    loss_fn = nn.MSELoss()
+    optimizer = torch.optim.Adam(ffn.parameters())
+    train_loop(ffn, data_loader, loss_fn, optimizer)
 
     # TODO: ======== モデルの保存 ========
