@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import argparse
 import datetime
 
 import numpy as np
@@ -23,7 +24,7 @@ def train_loop(model, dataloader, loss_fn, optimizer) -> None:
         optimizer.step()
 
 
-def main():
+def main(state_dict_path: str = None):
     ffn = FFN()
 
     # TODO: ======== モデルの読み込み ========
@@ -138,4 +139,15 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(
+        description="Unsupervised reversi AI trainer"
+    )
+    parser.add_argument(
+        "-r",
+        "--resume",
+        help="resume training from saved model (pickle-format, state_dict)",
+        required=False,
+        metavar="FILE",
+    )
+    args = parser.parse_args()
+    main(state_dict_path=args.resume)
