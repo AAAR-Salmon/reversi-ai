@@ -93,8 +93,12 @@ if __name__ == "__main__":
             winner = Color.LIGHT
 
         # データセットへの格納
-        train_x[train_i : train_i + history_i] = history_x  # noqa: E203
-        train_turn[train_i : train_i + history_i] = history_turn  # noqa: E203
+        train_x[train_i : train_i + history_i] = history_x[  # noqa: E203
+            :history_i
+        ]
+        train_turn[train_i : train_i + history_i] = history_turn[  # noqa: E203
+            :history_i
+        ]
         train_y[train_i : train_i + history_i] = np.array(  # noqa: E203
             [
                 label_to_onehot[hand]
@@ -103,7 +107,7 @@ if __name__ == "__main__":
                 for turn, hand in zip(history_turn, history_hand)
             ],
             dtype=np.float32,
-        )
+        )[:history_i]
         train_i += history_i
 
     # データセットの縮小
