@@ -103,7 +103,7 @@ if __name__ == "__main__":
             [
                 label_to_onehot[hand]
                 if turn == winner
-                else -label_to_onehot[hand]
+                else (1 - label_to_onehot[hand]) / (8 * 8 - 1)
                 for turn, hand in zip(history_turn, history_hand)
             ],
             dtype=np.float32,
