@@ -5,6 +5,7 @@ import time
 
 import requests as rq
 import torch
+from reversi_game.color import Color
 
 from reversi_ai.ffn import FFN
 
@@ -26,6 +27,11 @@ def wait_assigned_room(server_url: str, user_id: str):
         time.sleep(1)
 
 
+def get_user_color(server_url: str, room_id: str, user_id: str):
+    room = rq.get(f"{server_url}/rooms/{room_id}").json()
+    return Color.DARK if user_id == room["black"]["id"] else Color.LIGHT
+
+
 def main(model_path: str, server_url: str, user_id: str | None):
     ffn = FFN()
 
@@ -41,7 +47,7 @@ def main(model_path: str, server_url: str, user_id: str | None):
     # ======== main loop ========
     while True:
         room_id = wait_assigned_room(server_url, user_id)
-        print(room_id)
+        color = get_user_color(server_url, room_id, user_id)
 
 
 if __name__ == "__main__":
