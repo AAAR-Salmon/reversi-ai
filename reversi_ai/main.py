@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import argparse
+import time
 
 import requests as rq
 import torch
@@ -16,6 +17,15 @@ def register_user(server_url: str, user_name: str):
     return res.json()
 
 
+def wait_assigned_room(server_url: str, user_id: str):
+    while True:
+        res = rq.get(f"{server_url}/users/{user_id}")
+        status = res.json()["status"]
+        if status is not None:
+            return status
+        time.sleep(1)
+
+
 def main(model_path: str, server_url: str, user_id: str | None):
     ffn = FFN()
 
@@ -29,6 +39,11 @@ def main(model_path: str, server_url: str, user_id: str | None):
         user = {'id': user_id, 'name': user_name, 'status': None}
     else:
         user = register_user(server_url, user_name)
+
+    # ======== main loop ========
+    while True:
+        room_id = wait_assigned_room(server_url, user_id)
+        print(room_id)
 
 
 if __name__ == "__main__":
