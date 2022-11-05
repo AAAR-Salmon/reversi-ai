@@ -16,7 +16,7 @@ def register_user(server_url: str, user_name: str):
     return res.json()
 
 
-def main(model_path: str, server_url: str):
+def main(model_path: str, server_url: str, user_id: str | None):
     ffn = FFN()
 
     # ======== モデルの読み込み ========
@@ -25,7 +25,10 @@ def main(model_path: str, server_url: str):
 
     # ======== user（プレイヤー）登録 ========
     user_name = "FN-36K"
-    user = register_user(server_url, user_name)
+    if user_id is not None:
+        user = {'id': user_id, 'name': user_name, 'status': None}
+    else:
+        user = register_user(server_url, user_name)
 
 
 if __name__ == "__main__":
@@ -36,5 +39,8 @@ if __name__ == "__main__":
     parser.add_argument(
         "server_url", help="server url e.g. http://127.0.0.1:8000"
     )
+    parser.add_argument(
+        "-u", "--user-id", metavar="USER_ID", help="user_id of client"
+    )
     args = parser.parse_args()
-    main(args.model, args.server_url)
+    main(args.model, args.server_url, args.user_id)
