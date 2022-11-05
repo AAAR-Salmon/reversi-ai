@@ -3,9 +3,12 @@
 import argparse
 import time
 
+import numpy as np
 import requests as rq
+import scipy
 import torch
 from reversi_game.color import Color
+from reversi_game.reversi import Reversi
 
 from reversi_ai.ffn import FFN
 
@@ -40,6 +43,32 @@ def wait_turn_or_finish(server_url: str, user_id: str, room_id: str):
         time.sleep(1)
 
 
+def decide_hand(model, board: np.ndarray[np.float32], turn: Color):
+    reversi = Reversi(8, 8)
+    rc_coord_to_flat_index = np.arange(8 * 8).reshape((8, 8))
+    flat_coord_to_rc_index = np.mgrid[0:8, 0:8].reshape((2, -1))
+
+    evaluation_value: torch.Tensor = model(
+        torch.tensor(board, dtype=torch.float),
+        torch.tensor([[turn]], dtype=torch.float),
+    ).flatten()
+
+    reversi.board = board
+    placeable_index = list(
+        map(
+            rc_coord_to_flat_index.item,
+            reversi.get_placeable_coords(turn),
+        )
+    )
+
+    probability = scipy.special.softmax(
+        evaluation_value[placeable_index].detach().numpy()
+    )
+    chosen_index = np.random.choice(placeable_index, p=probability)
+    chosen_row, chosen_column = flat_coord_to_rc_index[:, chosen_index]
+    return chosen_row, chosen_column
+
+
 def main(model_path: str, server_url: str, user_id: str | None):
     ffn = FFN()
 
@@ -62,6 +91,9 @@ def main(model_path: str, server_url: str, user_id: str | None):
             )
             if next_user is None:
                 break
+            row, column = decide_hand(
+                ffn, np.array(board, dtype=np.float32), color
+            )
 
 
 if __name__ == "__main__":
