@@ -69,6 +69,15 @@ def decide_hand(model, board: np.ndarray[np.float32], turn: Color):
     return chosen_row, chosen_column
 
 
+def place_disk(
+    server_url: str, room_id: str, user_id: str, row: int, column: int
+):
+    rq.post(
+        f"{server_url}/rooms/{room_id}",
+        json={"user_id": user_id, "row": row, "column": column},
+    )
+
+
 def main(model_path: str, server_url: str, user_id: str | None):
     ffn = FFN()
 
@@ -91,9 +100,10 @@ def main(model_path: str, server_url: str, user_id: str | None):
             )
             if next_user is None:
                 break
-            row, column = decide_hand(
-                ffn, np.array(board, dtype=np.float32), color
+            row, column = map(
+                int, decide_hand(ffn, np.array(board, dtype=np.float32), color)
             )
+            place_disk(server_url, room_id, user_id, row, column)
 
 
 if __name__ == "__main__":
