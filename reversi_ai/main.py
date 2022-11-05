@@ -35,10 +35,8 @@ def main(model_path: str, server_url: str, user_id: str | None):
 
     # ======== user（プレイヤー）登録 ========
     user_name = "FN-36K"
-    if user_id is not None:
-        user = {'id': user_id, 'name': user_name, 'status': None}
-    else:
-        user = register_user(server_url, user_name)
+    if user_id is None:
+        user_id = register_user(server_url, user_name)["id"]
 
     # ======== main loop ========
     while True:
