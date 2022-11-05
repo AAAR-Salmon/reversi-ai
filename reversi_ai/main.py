@@ -32,6 +32,14 @@ def get_user_color(server_url: str, room_id: str, user_id: str):
     return Color.DARK if user_id == room["black"]["id"] else Color.LIGHT
 
 
+def wait_turn_or_finish(server_url: str, user_id: str, room_id: str):
+    while True:
+        res = rq.get(f"{server_url}/rooms/{room_id}").json()
+        if res["next"] is None or res["next"]["id"] == user_id:
+            return res["next"], res["board"]
+        time.sleep(1)
+
+
 def main(model_path: str, server_url: str, user_id: str | None):
     ffn = FFN()
 
@@ -48,6 +56,12 @@ def main(model_path: str, server_url: str, user_id: str | None):
     while True:
         room_id = wait_assigned_room(server_url, user_id)
         color = get_user_color(server_url, room_id, user_id)
+        while True:
+            next_user, board = wait_turn_or_finish(
+                server_url, user_id, room_id
+            )
+            if next_user is None:
+                break
 
 
 if __name__ == "__main__":
