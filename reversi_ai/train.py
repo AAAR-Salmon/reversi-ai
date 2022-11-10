@@ -82,8 +82,8 @@ def main(state_dict_path: str = None):
             while reversi.turn != Color.NONE:
                 # 評価値を計算
                 evaluation_value: torch.Tensor = ffn(
-                    torch.tensor(reversi.board, dtype=torch.float),
-                    torch.tensor([[reversi.turn]], dtype=torch.float),
+                    torch.tensor(reversi.board, dtype=torch.float32),
+                    torch.tensor([[reversi.turn]], dtype=torch.float32),
                 ).flatten()
 
                 # 置ける座標のリスト
@@ -152,9 +152,9 @@ def main(state_dict_path: str = None):
         show_progress("game", n_games, n_games, done=True)
 
         # ======== DataLoader の設定 ========
-        train_x = torch.tensor(train_x, dtype=torch.float)
-        train_turn = torch.tensor(train_turn, dtype=torch.float)
         train_y = torch.tensor(train_y, dtype=torch.float)
+        train_x = torch.tensor(train_x, dtype=torch.float32)
+        train_turn = torch.tensor(train_turn, dtype=torch.float32)
 
         dataset = torch.utils.data.TensorDataset(train_x, train_turn, train_y)
         data_loader = torch.utils.data.DataLoader(
