@@ -10,8 +10,8 @@ class FFN(nn.Module):
         # モデルの重みの定義
         self.relu = nn.ReLU()
         self.flatten = nn.Flatten()
-        self.fc1 = nn.Linear(64, 95)
-        self.fc2 = nn.Linear(96, 64)
+        self.fc1 = nn.Linear(64, 255)
+        self.fc2 = nn.Linear(256, 64)
 
     def forward(self, x: torch.Tensor, turn: torch.Tensor) -> torch.Tensor:
         # 入力から出力を計算する
@@ -20,6 +20,6 @@ class FFN(nn.Module):
         x = self.relu(x)
         x = torch.cat(
             (self.flatten(x), turn.reshape(-1, 1)), dim=1
-        )  # (95,) + (1,) -> (96,)
+        )  # (255,) + (1,) -> (256,)
         x = self.fc2(x)
         return x
