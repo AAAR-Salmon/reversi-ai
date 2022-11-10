@@ -133,8 +133,12 @@ def main(state_dict_path: str = None):
             n_hand_to_train = len(history_hand)
 
             # データセットへの格納
-            train_x[train_i : train_i + n_hand_to_train] = history_x  # noqa: E203
-            train_turn[train_i : train_i + n_hand_to_train] = winner  # noqa: E203
+            train_x[
+                train_i : train_i + n_hand_to_train  # noqa: E203
+            ] = history_x
+            train_turn[
+                train_i : train_i + n_hand_to_train  # noqa: E203
+            ] = winner
             train_y[
                 train_i : train_i + n_hand_to_train  # noqa: E203
             ] = label_to_onehot[history_hand]
