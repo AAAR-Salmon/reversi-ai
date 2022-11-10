@@ -123,14 +123,15 @@ def main(state_dict_path: str = None):
             else:
                 winner = Color.LIGHT
 
+            # 未使用領域をカットした view を作成
+            history_x = history_x[:history_i]
+            history_turn = history_turn[:history_i]
+            history_hand = history_hand[:history_i]
+
             # 勝った側の手だけ残すようフィルタ
-            history_x = history_x[:history_i][
-                history_turn[:history_i] == winner
-            ]
-            history_hand = history_hand[:history_i][
-                history_turn[:history_i] == winner
-            ]
-            n_hand_to_train = len(history_hand)
+            history_x = history_x[history_turn == winner]
+            history_hand = history_hand[history_turn == winner]
+            n_hand_to_train = np.count_nonzero(history_turn == winner)
 
             # データセットへの格納
             train_x[
