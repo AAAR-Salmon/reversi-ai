@@ -10,22 +10,16 @@ class FFN(nn.Module):
         # モデルの重みの定義
         self.relu = nn.ReLU()
         self.flatten = nn.Flatten()
-        self.conv1 = nn.Conv2d(1, 16, kernel_size=5)
-        self.conv2 = nn.Conv2d(16, 8, kernel_size=5, padding=2)
-        self.convt = nn.ConvTranspose2d(8, 1, kernel_size=5)
-        self.fc = nn.Linear(65, 64)
+        self.fc1 = nn.Linear(64, 95)
+        self.fc2 = nn.Linear(96, 64)
 
     def forward(self, x: torch.Tensor, turn: torch.Tensor) -> torch.Tensor:
         # 入力から出力を計算する
-        x = x.reshape(-1, 1, 8, 8)
-        x = self.conv1(x)  # (1, 8, 8) -> (16, 4, 4)
-        x = self.relu(x)
-        x = self.conv2(x)  # (16, 4, 4) -> (8, 4, 4)
-        x = self.relu(x)
-        x = self.convt(x)  # (8, 4, 4) -> (1, 8, 8)
+        x = x.reshape(-1, 64)
+        x = self.fc1(x)
         x = self.relu(x)
         x = torch.cat(
             (self.flatten(x), turn.reshape(-1, 1)), dim=1
-        )  # (1, 8, 8) + (1,) -> (65,)
-        x = self.fc(x)  # (65,) -> (64,)
+        )  # (95,) + (1,) -> (96,)
+        x = self.fc2(x)
         return x
