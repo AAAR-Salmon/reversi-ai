@@ -179,7 +179,7 @@ def main(state_dict_path: str = None, number_of_option: int = 3):
         timestamp = datetime.datetime.utcnow().timestamp()
         torch.save(
             ffn.state_dict(),
-            f"reversi_ffn_model-{timestamp}.pickle",
+            f"reversi_ffn_model-v2-{timestamp}.pickle",
         )
 
 
