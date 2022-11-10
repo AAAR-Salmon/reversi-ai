@@ -49,6 +49,7 @@ def show_progress(
 
 def main(state_dict_path: str = None, number_of_option: int = 3):
     ffn = FFN()
+    rng = np.random.default_rng()
 
     # ======== モデルの読み込み ========
     if state_dict_path is not None:
@@ -64,12 +65,7 @@ def main(state_dict_path: str = None, number_of_option: int = 3):
         train_i = 0
         train_x = np.empty((n_games * n_max_hands, 8 * 8), dtype=np.float32)
         train_turn = np.empty((n_games * n_max_hands,), dtype=np.float32)
-        train_y = np.empty((n_games * n_max_hands, 8 * 8), dtype=np.float32)
-        label_to_onehot = np.eye(8 * 8)
-
-        # (Row, Column) 座標と flatten 後の添字の相互変換用のやつ
-        rc_coord_to_flat_index = np.arange(8 * 8).reshape((8, 8))
-        flat_coord_to_rc_index = np.mgrid[0:8, 0:8].reshape((2, -1))
+        train_label = np.empty((n_games * n_max_hands,), dtype=np.int32)
 
         for game_i in range(n_games):
             show_progress("game", game_i, n_games)
@@ -80,28 +76,38 @@ def main(state_dict_path: str = None, number_of_option: int = 3):
             history_hand = np.empty((n_max_hands,), dtype=np.int32)
 
             while reversi.turn != Color.NONE:
+                # 置ける座標（flattened）
+                coords_placeable = np.array(
+                    reversi.get_placeable_coords(reversi.turn), np.int32
+                )
+                indices_placeable = np.ravel_multi_index(
+                    coords_placeable.T, (8, 8)
+                )
+
                 # 評価値を計算
                 evaluation_value: torch.Tensor = ffn(
                     torch.tensor(reversi.board, dtype=torch.float32),
                     torch.tensor([[reversi.turn]], dtype=torch.float32),
                 ).flatten()
 
-                # 置ける座標のリスト
-                placeable_index = list(
-                    map(
-                        rc_coord_to_flat_index.item,
-                        reversi.get_placeable_coords(reversi.turn),
-                    )
-                )
-
-                # 置ける座標のうち評価値が高い座標が高い確率で得られる
-                probability = scipy.special.softmax(
-                    evaluation_value[placeable_index].detach().numpy()
-                )
-                chosen_index = np.random.choice(placeable_index, p=probability)
-                chosen_row, chosen_column = flat_coord_to_rc_index[
-                    :, chosen_index
+                # 置ける座標のうち、評価値が高い順に number_of_option 個に絞り込む
+                evaluation_value = evaluation_value.detach().numpy()[
+                    indices_placeable
                 ]
+                indices_high_eval = evaluation_value.argsort()[
+                    -number_of_option:
+                ]
+
+                # 評価値が高い座標が高い確率で得られる
+                probability = scipy.special.softmax(
+                    evaluation_value[indices_high_eval]
+                )
+                chosen_index = rng.choice(
+                    indices_placeable[indices_high_eval], p=probability
+                )
+                chosen_row, chosen_column = np.unravel_index(
+                    chosen_index, (8, 8)
+                )
 
                 # 手番の仮保存
                 history_x[history_i] = reversi.board.flatten()
@@ -140,30 +146,32 @@ def main(state_dict_path: str = None, number_of_option: int = 3):
             train_turn[
                 train_i : train_i + n_hand_to_train  # noqa: E203
             ] = winner
-            train_y[
+            train_label[
                 train_i : train_i + n_hand_to_train  # noqa: E203
-            ] = label_to_onehot[history_hand]
+            ] = history_hand
             train_i += n_hand_to_train
 
         # データセットの縮小
         train_x.resize((train_i, 8 * 8))
         train_turn.resize((train_i,))
-        train_y.resize((train_i, 8 * 8))
+        train_label.resize((train_i,))
 
         show_progress("game", n_games, n_games, done=True)
 
         # ======== DataLoader の設定 ========
-        train_y = torch.tensor(train_y, dtype=torch.float)
         train_x = torch.tensor(train_x, dtype=torch.float32)
         train_turn = torch.tensor(train_turn, dtype=torch.float32)
+        train_label = torch.tensor(train_label, dtype=torch.int64)
 
-        dataset = torch.utils.data.TensorDataset(train_x, train_turn, train_y)
+        dataset = torch.utils.data.TensorDataset(
+            train_x, train_turn, train_label
+        )
         data_loader = torch.utils.data.DataLoader(
             dataset, batch_size=100, shuffle=True
         )
 
         # ======== 重みの最適化 ========
-        loss_fn = nn.MSELoss()
+        loss_fn = nn.CrossEntropyLoss()
         optimizer = torch.optim.Adam(ffn.parameters())
         train_loop(ffn, data_loader, loss_fn, optimizer)
 

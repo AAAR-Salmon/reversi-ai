@@ -47,27 +47,26 @@ def decide_hand(
     model, board: np.ndarray[np.float32], turn: Color, number_of_option: int
 ):
     reversi = Reversi(8, 8)
-    rc_coord_to_flat_index = np.arange(8 * 8).reshape((8, 8))
-    flat_coord_to_rc_index = np.mgrid[0:8, 0:8].reshape((2, -1))
-
-    evaluation_value: torch.Tensor = model(
-        torch.tensor(board, dtype=torch.float),
-        torch.tensor([[turn]], dtype=torch.float),
-    ).flatten()
 
     reversi.board = board
-    placeable_index = list(
-        map(
-            rc_coord_to_flat_index.item,
-            reversi.get_placeable_coords(turn),
-        )
+    coords_placeable = np.array(
+        reversi.get_placeable_coords(reversi.turn), np.int32
     )
+    indices_placeable = np.ravel_multi_index(coords_placeable.T, (8, 8))
 
-    probability = scipy.special.softmax(
-        evaluation_value[placeable_index].detach().numpy()
+    evaluation_value: torch.Tensor = model(
+        torch.tensor(board, dtype=torch.float32),
+        torch.tensor([[turn]], dtype=torch.float32),
+    ).flatten()
+
+    evaluation_value = evaluation_value.detach().numpy()[indices_placeable]
+    indices_high_eval = evaluation_value.argsort()[-number_of_option:]
+
+    probability = scipy.special.softmax(evaluation_value[indices_high_eval])
+    chosen_index = np.random.default_rng().choice(
+        indices_placeable[indices_high_eval], p=probability
     )
-    chosen_index = np.random.choice(placeable_index, p=probability)
-    chosen_row, chosen_column = flat_coord_to_rc_index[:, chosen_index]
+    chosen_row, chosen_column = np.unravel_index(chosen_index, (8, 8))
     return chosen_row, chosen_column
 
 
@@ -93,7 +92,7 @@ def main(
     ffn.eval()
 
     # ======== user（プレイヤー）登録 ========
-    user_name = "FN-36K"
+    user_name = "Salmon v2"
     if user_id is None:
         user_id = register_user(server_url, user_name)["id"]
 
@@ -108,7 +107,13 @@ def main(
             if next_user is None:
                 break
             row, column = map(
-                int, decide_hand(ffn, np.array(board, dtype=np.float32), color)
+                int,
+                decide_hand(
+                    ffn,
+                    np.array(board, dtype=np.float32),
+                    color,
+                    number_of_option,
+                ),
             )
             place_disk(server_url, room_id, user_id, row, column)
 
