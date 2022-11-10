@@ -123,23 +123,22 @@ def main(state_dict_path: str = None):
             else:
                 winner = Color.LIGHT
 
-            # データセットへの格納
-            train_x[train_i : train_i + history_i] = history_x[  # noqa: E203
-                :history_i
+            # 勝った側の手だけ残すようフィルタ
+            history_x = history_x[:history_i][
+                history_turn[:history_i] == winner
             ]
-            train_turn[
-                train_i : train_i + history_i  # noqa: E203
-            ] = history_turn[:history_i]
-            train_y[train_i : train_i + history_i] = np.array(  # noqa: E203
-                [
-                    label_to_onehot[hand]
-                    if turn == winner
-                    else (1 - label_to_onehot[hand]) / (8 * 8 - 1)
-                    for turn, hand in zip(history_turn, history_hand)
-                ],
-                dtype=np.float32,
-            )[:history_i]
-            train_i += history_i
+            history_hand = history_hand[:history_i][
+                history_turn[:history_i] == winner
+            ]
+            n_hand_to_train = len(history_hand)
+
+            # データセットへの格納
+            train_x[train_i : train_i + n_hand_to_train] = history_x  # noqa: E203
+            train_turn[train_i : train_i + n_hand_to_train] = winner  # noqa: E203
+            train_y[
+                train_i : train_i + n_hand_to_train  # noqa: E203
+            ] = label_to_onehot[history_hand]
+            train_i += n_hand_to_train
 
         # データセットの縮小
         train_x.resize((train_i, 8 * 8))
