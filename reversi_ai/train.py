@@ -47,7 +47,7 @@ def show_progress(
         )
 
 
-def main(state_dict_path: str = None):
+def main(state_dict_path: str = None, number_of_option: int = 3):
     ffn = FFN()
 
     # ======== モデルの読み込み ========
@@ -186,5 +186,14 @@ if __name__ == "__main__":
         required=False,
         metavar="FILE",
     )
+    parser.add_argument(
+        "-n",
+        "--number-of-option",
+        help="narrows options of choice to N",
+        type=int,
+        metavar="N",
+        required=False,
+        default=3,
+    )
     args = parser.parse_args()
-    main(state_dict_path=args.resume)
+    main(state_dict_path=args.resume, number_of_option=args.number_of_option)

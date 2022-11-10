@@ -43,7 +43,9 @@ def wait_turn_or_finish(server_url: str, user_id: str, room_id: str):
         time.sleep(1)
 
 
-def decide_hand(model, board: np.ndarray[np.float32], turn: Color):
+def decide_hand(
+    model, board: np.ndarray[np.float32], turn: Color, number_of_option: int
+):
     reversi = Reversi(8, 8)
     rc_coord_to_flat_index = np.arange(8 * 8).reshape((8, 8))
     flat_coord_to_rc_index = np.mgrid[0:8, 0:8].reshape((2, -1))
@@ -78,7 +80,12 @@ def place_disk(
     )
 
 
-def main(model_path: str, server_url: str, user_id: str | None):
+def main(
+    model_path: str,
+    server_url: str,
+    user_id: str | None,
+    number_of_option: int,
+):
     ffn = FFN()
 
     # ======== モデルの読み込み ========
@@ -117,5 +124,14 @@ if __name__ == "__main__":
     parser.add_argument(
         "-u", "--user-id", metavar="USER_ID", help="user_id of client"
     )
+    parser.add_argument(
+        "-n",
+        "--number-of-option",
+        help="narrows options of choice to N",
+        type=int,
+        metavar="N",
+        required=False,
+        default=3,
+    )
     args = parser.parse_args()
-    main(args.model, args.server_url, args.user_id)
+    main(args.model, args.server_url, args.user_id, args.number_of_option)
