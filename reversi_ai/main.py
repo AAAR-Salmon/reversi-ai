@@ -50,7 +50,7 @@ def decide_hand(
 
     reversi.board = board
     coords_placeable = np.array(
-        reversi.get_placeable_coords(reversi.turn), np.int32
+        reversi.get_placeable_coords(turn), np.int32
     )
     indices_placeable = np.ravel_multi_index(coords_placeable.T, (8, 8))
 
