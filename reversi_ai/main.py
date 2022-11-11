@@ -84,6 +84,7 @@ def main(
     server_url: str,
     user_id: str | None,
     number_of_option: int,
+    user_name: str | None,
 ):
     ffn = FFN()
 
@@ -92,7 +93,8 @@ def main(
     ffn.eval()
 
     # ======== user（プレイヤー）登録 ========
-    user_name = "Salmon v2"
+    if user_name is None:
+        user_name = "Salmon v2"
     if user_id is None:
         user_id = register_user(server_url, user_name)["id"]
 
@@ -138,5 +140,16 @@ if __name__ == "__main__":
         required=False,
         default=3,
     )
+    parser.add_argument(
+        "-U",
+        "--user-name",
+        metavar="USER_NAME",
+    )
     args = parser.parse_args()
-    main(args.model, args.server_url, args.user_id, args.number_of_option)
+    main(
+        args.model,
+        args.server_url,
+        args.user_id,
+        args.number_of_option,
+        args.user_name,
+    )
